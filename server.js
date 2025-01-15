@@ -7,13 +7,10 @@ app.use(express.json());
 // PostgreSQL connection setup
 
 const pool = new Pool({
-    user: process.env.PGUSER,
-    host: 'roundhouse.proxy.rlwy.net', // ✅ Use this as the hostname
-    database: process.env.PGDATABASE,
-    password: process.env.PGPASSWORD,
-    port: 20449, // ✅ Use Railway's assigned port
+    connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false } // ✅ Required for Railway
 });
+
 
 
 pool.connect()
