@@ -4,10 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkbox App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Simple Checkbox App</h1>
-    <input type="checkbox" id="toggleCheckbox">
-    <label for="toggleCheckbox">Toggle Me</label>
+    <h1>Enter your name and choose a checkbox</h1>
+
+    <!-- User Name Input -->
+    <input type="text" id="userName" placeholder="Enter your name">
+    
+    <!-- Checkboxes -->
+    <input type="checkbox" id="redCheckbox">
+    <label for="redCheckbox" class="red-text">Red checkbox</label>
+    
+    <input type="checkbox" id="blueCheckbox">
+    <label for="blueCheckbox" class="blue-text">Blue checkbox</label>
+    
+    <!-- Button to Submit Selection -->
+    <button onclick="processSelection()">Submit</button>
+    
+    <!-- Message Display -->
+    <p id="message"></p>
+    
+    <button onclick="showLeaderboard()">See Leaderboard</button>
+    <ul id="leaderboard"></ul>
+    
+    <script src="script.js"></script>    
+
+
 </body>
 </html>
