@@ -8,8 +8,13 @@ function App() {
   const [blueChecked, setBlueChecked] = useState(false);
   const [message, setMessage] = useState("");
 
+  interface LeaderboardEntry {
+    name: string;
+    submission_count: number;
+  }
+
   // State for leaderboard
-  const [leaderboard, setLeaderboard] = useState([]);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
 
   // Function to handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -49,28 +54,38 @@ function App() {
 
   // Function to update the leaderboard
   const updateLeaderboard = async () => {
+    console.log("Update Leaderboard button clicked");
     try {
-      const { data, error } = await supabase
-        .from("submissions")
-        .select("name, count(*) as submission_count")
-        .group("name")
-        .order("submission_count", { ascending: false })
-        .limit(3);
-
+      // Call the custom PostgreSQL function and assert the response type
+      const { data, error } = (await supabase.rpc("get_leaderboard")) as {
+        data: LeaderboardEntry[];
+        error: any;
+      };
+  
       if (error) {
         console.error("Error fetching leaderboard:", error);
         return;
       }
-
-      setLeaderboard(data || []);
+  
+      console.log("Fetched leaderboard data:", data);
+      // Use type assertion to ensure TypeScript understands the data structure
+      setLeaderboard((data as LeaderboardEntry[]) || []);
     } catch (err) {
       console.error("Unexpected error fetching leaderboard:", err);
     }
   };
+  
+  
+  
+  
+  
 
+  
+  
+  
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1>Enter your name and choose a checkbox:</h1>
+    <div style={{ textAlign: "left", marginTop: "20px", marginLeft: "20px" }}>
+      <h2>Enter your name and choose a checkbox:</h2>
       <form onSubmit={handleSubmit}>
         <label>
           Your name:
@@ -103,7 +118,7 @@ function App() {
       </form>
       <p>{message}</p>
 
-      <h2>Leaderboard</h2>
+      <h3>Leaderboard</h3>
       <ul>
         {leaderboard.map((entry, index) => (
           <li key={index}>
