@@ -14,7 +14,7 @@ const SignIn = () => {
   // Render a button to trigger the Sign-In flow
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1>Sign In</h1>
+      <h1>Challenge App</h1>
       <button onClick={handleSignIn}>Sign in with Google</button>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import PrivacyPolicy from "./pages/PrivacyPolicy"; // Import the new Privacy Policy component
 import TermsOfService from "./pages/TermsOfService"; // Import the new Terms of Service component
 import SignIn from "./pages/SignIn"; // Adjust the path to your SignIn.tsx file
@@ -99,65 +99,69 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* Sign In Page */}
+        <Route path="/sign-in" element={<SignIn />} />
         {/* Main App (Default Route) */}
         <Route
           path="/"
           element={
-            <div style={{ textAlign: "left", marginTop: "20px", marginLeft: "20px" }}>
-                <div>
-                  <h1>{user ? `Hi, ${user.user_metadata.full_name}!` : "Welcome!"}</h1>
-                </div>
-              <h2>Enter your name and choose a checkbox:</h2>
-              <form onSubmit={handleSubmit}>
-                <label>
-                  Your name:
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                </label>
-                <div>
+            user ? (
+              <div style={{ textAlign: "left", marginTop: "20px", marginLeft: "20px" }}>
+                  <div>
+                    <h1>{user ? `Hi, ${user.user_metadata.full_name}!` : "Welcome!"}</h1>
+                  </div>
+                <h2>Enter your name and choose a checkbox:</h2>
+                <form onSubmit={handleSubmit}>
                   <label>
+                    Your name:
                     <input
-                      type="checkbox"
-                      checked={redChecked}
-                      onChange={(e) => setRedChecked(e.target.checked)}
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
                     />
-                    Red checkbox
                   </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={blueChecked}
-                      onChange={(e) => setBlueChecked(e.target.checked)}
-                    />
-                    Blue checkbox
-                  </label>
-                </div>
-                <button type="submit">Submit</button>
-              </form>
-              <p>{message}</p>
+                  <div>
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={redChecked}
+                        onChange={(e) => setRedChecked(e.target.checked)}
+                      />
+                      Red checkbox
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={blueChecked}
+                        onChange={(e) => setBlueChecked(e.target.checked)}
+                      />
+                      Blue checkbox
+                    </label>
+                  </div>
+                  <button type="submit">Submit</button>
+                </form>
+                <p>{message}</p>
 
-              <h3>Leaderboard</h3>
-              <ul>
-                {leaderboard.map((entry, index) => (
-                  <li key={index}>
-                    {entry.name}: {entry.submission_count} submissions
-                  </li>
-                ))}
-              </ul>
-              <button onClick={updateLeaderboard}>Update Leaderboard</button>
-            </div>
+                <h3>Leaderboard</h3>
+                <ul>
+                  {leaderboard.map((entry, index) => (
+                    <li key={index}>
+                      {entry.name}: {entry.submission_count} submissions
+                    </li>
+                  ))}
+                </ul>
+                <button onClick={updateLeaderboard}>Update Leaderboard</button>
+              </div>
+            ) : (
+              <Navigate to="/sign-in" replace />
+            )
           }
         />
         {/* Privacy Policy Page */}
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         {/* Terms of Service Page */}
         <Route path="/terms-of-service" element={<TermsOfService />} />
-        {/* Sign In Page */}
-        <Route path="/sign-in" element={<SignIn />} />
       </Routes>
       {/* Footer visible on all pages */}
       <footer style={{ textAlign: "left", marginTop: "20px", marginLeft: "20px" }}>
