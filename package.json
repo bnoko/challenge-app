@@ -2,7 +2,7 @@
   "name": "challenge-app",
   "private": true,
   "version": "0.0.0",
-  "homepage": "https://challenge-app-production.up.railway.app",
+  "homepage": "https://challengeapp.xyz",
   "type": "module",
   "scripts": {
     "dev": "vite",
