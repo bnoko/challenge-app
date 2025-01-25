@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../supabase"; 
+import { supabase } from "../supabase";
+import { useNavigate } from "react-router-dom"; // Import navigate
 
 const SignIn = () => {
-  const [loading, setLoading] = useState(true); // Track loading state
+  const navigate = useNavigate(); // Create a navigate instance for programmatic routing
+  const [loading, setLoading] = useState(true);
 
   const handleSignIn = async () => {
     console.log("Sign-in button clicked");
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google", // Specify Google as the OAuth provider
+      provider: "google",
     });
     if (error) {
       console.error("Sign-in failed:", error.message);
@@ -30,7 +32,7 @@ const SignIn = () => {
         });
 
         console.log("Session set successfully");
-        window.location.href = "/"; // Redirect to home after setting session
+        navigate("/"); // Use navigate for redirection
         return;
       }
 
@@ -43,14 +45,14 @@ const SignIn = () => {
 
       if (session) {
         console.log("User is already signed in:", session);
-        window.location.href = "/";  // Redirect to the home page or dashboard
+        navigate("/"); // Use navigate for redirection
       }
 
       setLoading(false);
     };
 
     checkSession();
-  }, []);
+  }, [navigate]);
 
   if (loading) {
     return <div>Loading...</div>;
