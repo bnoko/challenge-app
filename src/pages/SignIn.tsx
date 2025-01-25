@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../supabase"; // Ensure the path to your Supabase client is correct
+import { supabase } from "../supabase"; 
 
 const SignIn = () => {
   const [loading, setLoading] = useState(true); // Track loading state
 
-  // Function to handle Google Sign-In using Supabase OAuth
   const handleSignIn = async () => {
     console.log("Sign-in button clicked");
     const { error } = await supabase.auth.signInWithOAuth({
@@ -17,12 +16,25 @@ const SignIn = () => {
     }
   };
 
-  // Check if the user is already authenticated and handle token-based authentication after redirect
   useEffect(() => {
     const checkSession = async () => {
-      // Fetch session on page load to handle any existing login session
+      const hash = window.location.hash;
+      const params = new URLSearchParams(hash.replace("#", "?"));
+      const accessToken = params.get("access_token");
+      const refreshToken = params.get("refresh_token");
+
+      if (accessToken && refreshToken) {
+        await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+
+        console.log("Session set successfully");
+        window.location.href = "/"; // Redirect to home after setting session
+        return;
+      }
+
       const { data: session, error } = await supabase.auth.getSession();
-      
       if (error) {
         console.error("Error fetching session:", error.message);
         setLoading(false);
@@ -31,7 +43,7 @@ const SignIn = () => {
 
       if (session) {
         console.log("User is already signed in:", session);
-        window.location.href = "/"; // Redirect to the home page or dashboard
+        window.location.href = "/";  // Redirect to the home page or dashboard
       }
 
       setLoading(false);
@@ -40,7 +52,6 @@ const SignIn = () => {
     checkSession();
   }, []);
 
-  // If the app is loading or checking session, show a loading message
   if (loading) {
     return <div>Loading...</div>;
   }

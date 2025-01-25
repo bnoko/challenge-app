@@ -19,21 +19,28 @@ function App() {
   }
 
   const [user, setUser] = useState<User | null>(null);  // Track the user state
+  const [loading, setLoading] = useState(true); // Track loading state
 
   useEffect(() => {
     const fetchUser = async () => {
-      const { data, error } = await supabase.auth.getSession();  // Fetch session
-
+      const { data, error } = await supabase.auth.getSession();
+      console.log("Session data:", data);  // Log session to check if it's being fetched
+  
       if (error) {
         console.error("Error fetching session:", error.message);
+        setLoading(false); // Stop loading if there's an error
         return;
       }
-
-      setUser(data.session?.user || null);  // Set user from session data
+      setUser(data?.session?.user || null);  // Set user if session exists
+      setLoading(false); // Stop loading once session check is complete
     };
+  
+    fetchUser();
+  }, []);
 
-    fetchUser();  // Call the function to get user session
-  }, []); // Run only once on component mount
+  if (loading) {
+    return <div>Loading...</div>;  // Show loading while session is being fetched
+  }  
 
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
 
