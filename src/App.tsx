@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import PrivacyPolicy from "./pages/PrivacyPolicy"; // Import the new Privacy Policy component
 import TermsOfService from "./pages/TermsOfService"; // Import the new Terms of Service component
 import SignIn from "./pages/SignIn"; // Adjust the path to your SignIn.tsx file
@@ -111,8 +111,6 @@ useEffect(() => {
   return (
     <Router>
       <Routes>
-        {/* Sign In Page */}
-        <Route path="/sign-in" element={<SignIn />} />
         {/* Main App (Default Route) */}
         <Route
           path="/"
@@ -120,6 +118,7 @@ useEffect(() => {
             // UNDONE: Temp removal of next line to Bypass the user check (as well as comments at bottom)
             user ? 
             (
+              // Render main app if user is authenticated
               <div style={{ textAlign: "left", marginTop: "20px", marginLeft: "20px" }}>
                   <div>
                     <h1>{user ? `Hi, ${user.user_metadata.full_name}!` : "Welcome!"}</h1>
@@ -169,11 +168,13 @@ useEffect(() => {
               </div>
             // Temp removal of next two lines to Bypass the user check (as well as comments at top
             ) : (
-              //<Navigate to="/sign-in" replace /> // Redirect to sign-in if user is not authenticated
-              <div>Please log in to see the content.</div> // Placeholder content
+          <Navigate to="/sign-in" replace /> // Redirect to sign-in if user is not authenticated
+         // <div>Please log in to see the content.</div> // Placeholder content
             )
           }
         />
+        //Sign-in page (show only if user is not authenticated)
+        <Route path="/sign-in" element={<SignIn />} />
         {/* Privacy Policy Page */}
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         {/* Terms of Service Page */}

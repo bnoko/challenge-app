@@ -1,24 +1,19 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../supabase"; // Ensure the path to your Supabase client is correct
-import { useNavigate } from "react-router-dom"; // Import useNavigate for React Router
 
 const SignIn = () => {
-  const navigate = useNavigate(); // Create a navigate instance for programmatic routing
   const [loading, setLoading] = useState(true); // Track loading state
 
   // Function to handle Google Sign-In using Supabase OAuth
   const handleSignIn = async () => {
     console.log("Sign-in button clicked");
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
+      provider: "google", // Specify Google as the OAuth provider
     });
     if (error) {
       console.error("Sign-in failed:", error.message);
     } else {
-      console.log("Sign-in successful");
-      // Log session after sign-in attempt
-      const { data } = await supabase.auth.getSession();
-      console.log("Post-sign-in session:", data);
+      console.log("Sign-in initiated successfully. Complete the OAuth flow.");
     }
   };
 
@@ -60,7 +55,7 @@ const SignIn = () => {
       // If the user is already signed in, redirect them to the home page
       if (session) {
         console.log("User is already signed in:", session);
-        navigate("/");  // Redirect to the home page or dashboard
+        window.location.href = "/";  // Redirect to the home page or dashboard
       }
 
       // Stop the loading state once all checks are complete
@@ -68,7 +63,7 @@ const SignIn = () => {
     };
 
     checkSession();
-  }, [navigate]);
+  }, []);
 
   // If the app is loading or checking session, show a loading message
   if (loading) {
