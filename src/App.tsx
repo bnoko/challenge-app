@@ -20,23 +20,35 @@ function App() {
   }
 
   // Initialize the user state and fetch the currently logged-in user from Supabase when the app loads.
-  const [user, setUser] = useState<User | null>(null);
+  //TEMP: Hardcode the user state to simulate being logged in (replacing the line //const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>({
+    id: "sample-user-id", // Fake user ID
+    email: "user@example.com",
+    user_metadata: { full_name: "Test User" }, // Fake user metadata
+    app_metadata: {}, // Can be an empty object or any default value
+    aud: "", // An empty string or default value
+    created_at: "", // A default or empty string
+  });
+  
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data, error } = await supabase.auth.getSession(); // Keep `data` as it is.
 
-      if (error) {
-        console.error("Error fetching user session:", error.message);
-        return;
-      }
 
-      // Access the user from the session if it exists
-      setUser(data.session?.user || null);
-    };
 
-    fetchUser();
-  }, []);
+useEffect(() => {
+  const fetchUser = async () => {
+    // Log session data to inspect
+    const { data, error } = await supabase.auth.getSession();
+    console.log("Session data:", data);  // Log session to check if it's being fetched
+    if (error) {
+      console.error("Error fetching session:", error.message);
+      return;
+    }
+    setUser(data.session?.user || null);  // Set user or null based on session data
+  };
+
+  fetchUser();
+}, []);
+
 
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
 
@@ -105,7 +117,9 @@ function App() {
         <Route
           path="/"
           element={
-            user ? (
+            // UNDONE: Temp removal of next line to Bypass the user check (as well as comments at bottom)
+            user ? 
+            (
               <div style={{ textAlign: "left", marginTop: "20px", marginLeft: "20px" }}>
                   <div>
                     <h1>{user ? `Hi, ${user.user_metadata.full_name}!` : "Welcome!"}</h1>
@@ -153,8 +167,10 @@ function App() {
                 </ul>
                 <button onClick={updateLeaderboard}>Update Leaderboard</button>
               </div>
+            // Temp removal of next two lines to Bypass the user check (as well as comments at top
             ) : (
-              <Navigate to="/sign-in" replace />
+              //<Navigate to="/sign-in" replace /> // Redirect to sign-in if user is not authenticated
+              <div>Please log in to see the content.</div> // Placeholder content
             )
           }
         />
