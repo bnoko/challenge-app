@@ -20,45 +20,20 @@ const SignIn = () => {
   // Check if the user is already authenticated and handle token-based authentication after redirect
   useEffect(() => {
     const checkSession = async () => {
-      // Log the current URL hash to debug token retrieval
-      console.log("Current URL hash:", window.location.hash);
-
-      const hash = window.location.hash;
-      const params = new URLSearchParams(hash.replace("#", "?"));
-      const accessToken = params.get("access_token");
-      const refreshToken = params.get("refresh_token");
-
-      console.log("Access Token:", accessToken);  // Log access token
-      console.log("Refresh Token:", refreshToken); // Log refresh token
-
-      if (accessToken && refreshToken) {
-        // If tokens exist, set the session
-        await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken,
-        });
-
-        console.log("Session set successfully"); // Log session set success
-        window.location.href = "/"; // Redirect to home after setting session
-        return;
-      }
-
-      // Fetch the session
+      // Fetch session on page load to handle any existing login session
       const { data: session, error } = await supabase.auth.getSession();
-
+      
       if (error) {
         console.error("Error fetching session:", error.message);
         setLoading(false);
         return;
       }
 
-      // If the user is already signed in, redirect them to the home page
       if (session) {
         console.log("User is already signed in:", session);
-        window.location.href = "/";  // Redirect to the home page or dashboard
+        window.location.href = "/"; // Redirect to the home page or dashboard
       }
 
-      // Stop the loading state once all checks are complete
       setLoading(false);
     };
 
@@ -70,7 +45,6 @@ const SignIn = () => {
     return <div>Loading...</div>;
   }
 
-  // Render the Sign-In button
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h1>Challenge App</h1>

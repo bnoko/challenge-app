@@ -6,9 +6,8 @@ import SignIn from "./pages/SignIn"; // Adjust the path to your SignIn.tsx file
 import { supabase } from "./supabase";
 import { User } from "@supabase/supabase-js"; // Import the User type
 
-
 function App() {
-  // State and functions remain unchanged
+  // State and functions for user, leaderboard, form data
   const [name, setName] = useState("");
   const [redChecked, setRedChecked] = useState(false);
   const [blueChecked, setBlueChecked] = useState(false);
@@ -19,42 +18,28 @@ function App() {
     submission_count: number;
   }
 
-  // Initialize the user state and fetch the currently logged-in user from Supabase when the app loads.
-  //TEMP: Hardcode the user state to simulate being logged in (replacing the line //const [user, setUser] = useState<User | null>(null);
-  const [user, setUser] = useState<User | null>({
-    id: "sample-user-id", // Fake user ID
-    email: "user@example.com",
-    user_metadata: { full_name: "Test User" }, // Fake user metadata
-    app_metadata: {}, // Can be an empty object or any default value
-    aud: "", // An empty string or default value
-    created_at: "", // A default or empty string
-  });
-  
+  const [user, setUser] = useState<User | null>(null);  // Track the user state
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data, error } = await supabase.auth.getSession();  // Fetch session
 
+      if (error) {
+        console.error("Error fetching session:", error.message);
+        return;
+      }
 
+      setUser(data.session?.user || null);  // Set user from session data
+    };
 
-useEffect(() => {
-  const fetchUser = async () => {
-    // Log session data to inspect
-    const { data, error } = await supabase.auth.getSession();
-    console.log("Session data:", data);  // Log session to check if it's being fetched
-    if (error) {
-      console.error("Error fetching session:", error.message);
-      return;
-    }
-    setUser(data.session?.user || null);  // Set user or null based on session data
-  };
-
-  fetchUser();
-}, []);
-
+    fetchUser();  // Call the function to get user session
+  }, []); // Run only once on component mount
 
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Form handling logic
+    // Form handling logic for checkbox submissions
     if (redChecked && blueChecked) {
       setMessage(`${name}, you crafty devil. I didn't say you could check both checkboxes!`);
       return;
@@ -111,18 +96,16 @@ useEffect(() => {
   return (
     <Router>
       <Routes>
-        {/* Main App (Default Route) */}
+        {/* Main App Route (Default Route) */}
         <Route
           path="/"
           element={
-            // UNDONE: Temp removal of next line to Bypass the user check (as well as comments at bottom)
-            user ? 
-            (
+            user ? (
               // Render main app if user is authenticated
               <div style={{ textAlign: "left", marginTop: "20px", marginLeft: "20px" }}>
-                  <div>
-                    <h1>{user ? `Hi, ${user.user_metadata.full_name}!` : "Welcome!"}</h1>
-                  </div>
+                <div>
+                  <h1>{`Hi, ${user.user_metadata?.full_name || "User"}!`}</h1>
+                </div>
                 <h2>Enter your name and choose a checkbox:</h2>
                 <form onSubmit={handleSubmit}>
                   <label>
@@ -166,20 +149,21 @@ useEffect(() => {
                 </ul>
                 <button onClick={updateLeaderboard}>Update Leaderboard</button>
               </div>
-            // Temp removal of next two lines to Bypass the user check (as well as comments at top
             ) : (
-          <Navigate to="/sign-in" replace /> // Redirect to sign-in if user is not authenticated
-         // <div>Please log in to see the content.</div> // Placeholder content
+              // Redirect to sign-in if user is not authenticated
+              <Navigate to="/sign-in" replace />
             )
           }
         />
-        //Sign-in page (show only if user is not authenticated)
+        
+        {/* Sign-in Page */}
         <Route path="/sign-in" element={<SignIn />} />
-        {/* Privacy Policy Page */}
+        
+        {/* Privacy Policy and Terms of Service Pages */}
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        {/* Terms of Service Page */}
         <Route path="/terms-of-service" element={<TermsOfService />} />
       </Routes>
+      
       {/* Footer visible on all pages */}
       <footer style={{ textAlign: "left", marginTop: "20px", marginLeft: "20px" }}>
         <a href="/privacy-policy">Privacy Policy</a> | <a href="/terms-of-service">Terms of Service</a>
