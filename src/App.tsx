@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import PrivacyPolicy from "./pages/PrivacyPolicy"; // Import the new Privacy Policy component
 import TermsOfService from "./pages/TermsOfService"; // Import the new Terms of Service component
 import SignIn from "./pages/SignIn"; // Adjust the path to your SignIn.tsx file
