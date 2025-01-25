@@ -1,28 +1,25 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { supabase } from "./supabase";
-import { User } from "@supabase/supabase-js"; // Import the User type
+import { User } from "@supabase/supabase-js";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
-      try {
-        const { data, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error("Error fetching session:", error.message);
-          return;
-        }
-        setUser(data.session?.user || null);
-        console.log("Session fetched on load:", data);
-      } catch (err) {
-        console.error("Unexpected error fetching session:", err);
-      }
+      const { data } = await supabase.auth.getSession();
+      setUser(data?.session?.user || null);
     };
-
     fetchUser();
   }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  };
 
   return (
     <Router>
@@ -32,84 +29,43 @@ function App() {
           element={
             user ? (
               <div>
-                <h1>Welcome, {user?.email || "User"}!</h1>
+                <h1>Hi {user.user_metadata?.full_name || "User"}, you are signed in!</h1>
+                <button onClick={handleSignOut}>Sign out</button>
+                <Footer />
               </div>
             ) : (
               <Navigate to="/sign-in" replace />
             )
           }
         />
-        <Route path="/sign-in" element={<SignIn />} />
+        <Route
+          path="/sign-in"
+          element={
+            <div>
+              <h1>Welcome</h1>
+              <button
+                onClick={async () => {
+                  const { error } = await supabase.auth.signInWithOAuth({ provider: "google" });
+                  if (error) console.error("Error during sign-in:", error.message);
+                }}
+              >
+                Sign in with Google
+              </button>
+              <Footer />
+            </div>
+          }
+        />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       </Routes>
     </Router>
   );
 }
 
-const SignIn = () => {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const checkSession = async () => {
-      const hash = window.location.hash;
-      console.log("URL Hash:", hash);
-
-      const params = new URLSearchParams(hash.replace("#", "?"));
-      const accessToken = params.get("access_token");
-      const refreshToken = params.get("refresh_token");
-
-      if (accessToken && refreshToken) {
-        try {
-          await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: refreshToken,
-          });
-          console.log("Session set successfully with tokens.");
-          window.location.href = "/";
-        } catch (error) {
-          console.error("Error setting session with tokens:", error);
-        }
-        return;
-      }
-
-      const { data: session, error } = await supabase.auth.getSession();
-      if (error) {
-        console.error("Error fetching session during redirect:", error.message);
-        setLoading(false);
-        return;
-      }
-
-      if (session) {
-        console.log("User already signed in:", session);
-        window.location.href = "/";
-      }
-
-      setLoading(false);
-    };
-
-    checkSession();
-  }, []);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  return (
-    <div>
-      <h1>Sign In</h1>
-      <button
-        onClick={async () => {
-          const { error } = await supabase.auth.signInWithOAuth({ provider: "google" });
-          if (error) {
-            console.error("Error during sign-in:", error.message);
-          } else {
-            console.log("Sign-in initiated.");
-          }
-        }}
-      >
-        Sign in with Google
-      </button>
-    </div>
-  );
-};
+const Footer = () => (
+  <footer style={{ textAlign: "center", marginTop: "20px" }}>
+    <a href="/privacy-policy">Privacy Policy</a> | <a href="/terms-of-service">Terms of Service</a>
+  </footer>
+);
 
 export default App;
