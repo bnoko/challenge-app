@@ -4,7 +4,7 @@ import SignIn from "./pages/SignIn";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 
-const App = () => {
+const App: React.FC = () => {
   const navigate = useNavigate();
 
   return (
@@ -20,7 +20,7 @@ const App = () => {
   );
 };
 
-const Root = () => (
+const Root: React.FC = () => (
   <Router>
     <Routes>
       <Route path="/" element={<App />} />

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
-const PrivacyPolicy = () => {
-  const navigate = useNavigate();
+const PrivacyPolicy: React.FC = () => {
+    const navigate = useNavigate();
 
   return (
     <div style={{ textAlign: "left", marginTop: "20px", marginLeft: "20px" }}>

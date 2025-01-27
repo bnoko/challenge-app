@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
-const TermsOfService = () => {
-  const navigate = useNavigate();
+const TermsOfService: React.FC = () => {
+    const navigate = useNavigate();
 
   return (
     <div style={{ textAlign: "left", marginTop: "20px", marginLeft: "20px" }}>
