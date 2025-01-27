@@ -5,6 +5,8 @@ import { supabase } from '../supabase';
 const Home: React.FC = () => {
   const [userName, setUserName] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [signInStatus, setSignInStatus] = useState<string>("Checking...");
+
 
   useEffect(() => {
     // function to get username
@@ -34,8 +36,28 @@ const Home: React.FC = () => {
 
       setUserName(userData?.full_name || 'Guest');
     };
-
+    
     fetchUserData();
+
+    //check sign in status
+    const checkSignInStatus = async () => {
+        const { data, error } = await supabase.auth.getSession();
+  
+        if (error) {
+            console.error("Error fetching session:", error.message);
+            setSignInStatus("Error checking sign-in status");
+            return;
+          }
+      
+          if (data.session?.user) {
+            setSignInStatus("You're signed in with Google");
+          } else {
+            setSignInStatus("You're not signed in with Google");
+          }
+        };
+      
+      checkSignInStatus();
+  
   }, []);
 
   //function to handle logout process
@@ -50,7 +72,8 @@ const Home: React.FC = () => {
   
   return (
     <div style={{ textAlign: 'center', marginTop: '50px' }}>
-      <h1>Welcome, {userName}!</h1>
+      <h2>Welcome, {userName}!</h2>
+      <p>{signInStatus}</p> {/* Displays the sign-in status */}
       <button onClick={handleLogout} style={{ margin: "10px" }}> Log Out
       </button>
       <footer style={{ marginTop: '50px' }}>
