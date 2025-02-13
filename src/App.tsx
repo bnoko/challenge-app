@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useNavigate, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import { supabase } from "./supabase"; // Adjust the import as needed
 import Home from "./pages/Home";
@@ -46,7 +46,7 @@ const App: React.FC = () => {
         Pretend user is not logged in
       </button>
     </div>
-  );
+  );  
 };
 
 const Root: React.FC = () => (
@@ -57,6 +57,8 @@ const Root: React.FC = () => (
       <Route path="/sign-in" element={<SignIn />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/terms-of-service" element={<TermsOfService />} />
+      {/* Redirect Invite Link for Hana's challenges */}
+      <Route path="/invite/4rf6j" element={<Navigate replace to="https://forms.gle/wGKQm1wYcww7N8C46" />} />
     </Routes>
   </Router>
 );
